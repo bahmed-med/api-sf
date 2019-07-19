@@ -1,3 +1,6 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+article:
+  type: rest
+  resource: App\Controller\ArticleController
