@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
+use App\Form\ArticleType;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,15 +16,46 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * Class ArticleController
  * @package App\Controller
- * @Rest\RouteResource("Articles", pluralize=false)
+ *
  */
 class ArticleController extends FOSRestController implements ClassResourceInterface
 {
+
     /**
-     *
+     * @var EntityManagerInterface
      */
-    public function getAction()
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        return new JsonResponse('test');
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @Route("/article", name="post_article", methods={"POST"})
+     */
+    public function postAction(Request $request)
+    {
+        $form = $this->createForm(ArticleType::class, new Article());
+        $form->submit($request->request->all());
+
+        if (false === $form->isValid()) {
+
+            return $this->handleView(
+                $this->view($form)
+            );
+        }
+
+        $this->entityManager->persist($form->getData());
+        $this->entityManager->flush();
+
+        return $this->handleView(
+            $this->view(
+                [
+                    'status' => 'ok',
+                ],
+                Response::HTTP_CREATED
+            )
+        );
     }
 }

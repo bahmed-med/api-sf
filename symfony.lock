@@ -32,7 +32,7 @@
             "ref": "5e476e8edf3fa8e7f045ad034f89bb464424f5c1"
         },
         "files": [
-            "config/packages/doctrine.yaml",
+            "config/packages/doctrine1.yaml",
             "config/packages/prod/doctrine.yaml",
             "src/Entity/.gitignore",
             "src/Repository/.gitignore"
